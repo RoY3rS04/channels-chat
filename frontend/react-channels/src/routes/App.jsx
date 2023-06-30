@@ -1,9 +1,9 @@
-import {Outlet, redirect, useLoaderData} from 'react-router-dom'
+import {Outlet, redirect, useLoaderData, useRevalidator} from 'react-router-dom'
 
 import ChannelList from '../components/ChannelList'
 import {AuthContext} from '../context/auth.context'
 import ky from '../utilities/ky'
-import { useState } from 'react'
+import { createContext, useState } from 'react'
 
 export async function loader() {
   try {
@@ -23,6 +23,8 @@ export async function loader() {
   }
 }
 
+export const ChannelContext = createContext();
+
 export default function App() {
 
   const { user, channels } = useLoaderData();
@@ -37,9 +39,11 @@ export default function App() {
   
   function handleInputChange(e) {
     setSearchedChannels(channels.filter((channel) => {
-      return channel.name.startsWith(e.target.value);
+      return channel.name.trim().split(' ').filter(
+        (letter) => letter !== '').join('').toLowerCase()
+        .includes(e.target.value.trim().split(' ').filter(
+        (letter) => letter !== '').join('').toLowerCase());
     }));
-
     //console.log(searchedChannels);
   }
 
@@ -65,12 +69,9 @@ export default function App() {
             Logout
           </button>
         </div>
-        <div className="flex flex-1 flex-col">
-          <h2 className="flex h-12 items-center justify-center border-b border-gray-100 text-xl font-semibold">
-            Messages
-          </h2>
-          <Outlet />
-        </div>
+            <ChannelContext.Provider value={channels}>
+            <Outlet user={user} />
+            </ChannelContext.Provider>
       </div>
     </AuthContext.Provider>
     )

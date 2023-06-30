@@ -1,7 +1,7 @@
 import {forwardRef} from 'react'
 import {Form, useParams} from 'react-router-dom'
 
-const MessageForm = forwardRef(function MessageForm(props, ref) {
+const MessageForm = forwardRef(function MessageForm({handleSubmit}, ref) {
   const params = useParams();
 
   return (
@@ -10,6 +10,7 @@ const MessageForm = forwardRef(function MessageForm(props, ref) {
       className="mt-4 rounded-md bg-gray-100 p-2"
       method="post"
       ref={ref}
+      onSubmit={handleSubmit}
     >
       <input
         autoFocus
